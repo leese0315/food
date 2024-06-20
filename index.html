@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>엄마의 파티 메뉴 선택</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .options, .comparison {
+            margin: 20px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .food-option {
+            display: inline-block;
+            margin: 10px;
+        }
+        .food-option img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .food-option button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>엄마의 파티</h1>
+        <p>어떤 음식을 먹을까요?</p>
+        
+        <div class="options">
+            <button onclick="startComparison('일식')">일식</button>
+            <button onclick="startComparison('중식')">중식</button>
+            <button onclick="startComparison('한식')">한식</button>
+        </div>
+        
+        <div id="comparison" class="hidden comparison">
+            <h2 id="comparison-title"></h2>
+            <div id="comparison-options"></div>
+        </div>
+    </div>
+    
+    <script>
+        const foodOptions = {
+            '일식': [
+                { name: '초밥', img: 'https://storage.googleapis.com/ikidane/upload/15_53a7231c3f/15_53a7231c3f.jpg' },
+                { name: '라멘', img: 'https://sitem.ssgcdn.com/43/10/44/item/1000267441043_i1_750.jpg' },
+                { name: '우동', img: 'https://i.namu.wiki/i/7Zu0RCSIGqsUkoz_zGMQQqHskoVeWmMt3Lj7whQ1oTmUeFzcHbX7r-Ig6E3W7PTTMhqAa255j-XY1YW0TjeQrA.webp' },
+                { name: '오마카세', img: 'https://nihon-mitsuketa.com/wp-content/uploads/2023/10/%25EF%25BC%2591.jpg' },
+                { name: '사시미', img: 'https://yeohaeng.jp/wp-content/uploads/2023/11/sashimi_moriawase_2.jpg' },
+                { name: '가츠동', img: 'https://i.namu.wiki/i/gHyKzoat68YWuuYgSq-3ThEav2L2f58TJhH1Wf2Eybjx5O57t7zxfyOufLkyZmPa_1-wQoSfDimEYyAOo8naAQ.webp' },
+                { name: '타코야키', img: 'https://thenaum.cdn-nhncommerce.com/data/goods/18/01/03/1000001570/1000001570_detail_049.jpg' },
+                { name: '오코노미야키', img: 'https://recipe1.ezmember.co.kr/cache/recipe/2017/02/21/3a20a63e4efacbcfc47571c7a7bac2601.jpg' }
+            ],
+            '중식': [
+                { name: '짜장면', img: 'https://i.imgur.com/r0TzD24.jpg' },
+                { name: '짬뽕', img: 'https://i.imgur.com/3Qr1VPX.jpg' },
+                { name: '탕수육', img: 'https://i.imgur.com/4u6bY9S.jpg' },
+                { name: '마파두부', img: 'https://i.imgur.com/oaX5GJx.jpg' },
+                { name: '깐풍기', img: 'https://i.imgur.com/1Q9Rg7J.jpg' },
+                { name: '칠리새우', img: 'https://i.imgur.com/3B7WbRn.jpg' },
+                { name: '고추잡채', img: 'https://i.imgur.com/D9MvDZm.jpg' },
+                { name: '양장피', img: 'https://i.imgur.com/3T7T4h2.jpg' }
+            ],
+            '한식': [
+                { name: '명륜진사갈비', img: 'https://i.imgur.com/qNoyJFb.jpg' },
+                { name: '불고기', img: 'https://i.imgur.com/4l6N5m4.jpg' },
+                { name: '김치찌개', img: 'https://i.imgur.com/8oLkHS3.jpg' },
+                { name: '된장찌개', img: 'https://i.imgur.com/1mDOaCB.jpg' },
+                { name: '삼계탕', img: 'https://i.imgur.com/ebU6BqI.jpg' },
+                { name: '갈비찜', img: 'https://i.imgur.com/7U6M90i.jpg' },
+                { name: '제육볶음', img: 'https://i.imgur.com/JVVF1JY.jpg' },
+                { name: '조개구이', img: 'https://i.imgur.com/ZCZU7O2.jpg' }
+            ]
+        };
+
+        let currentCategory = '';
+        let comparisonQueue = [];
+        let currentRound = 1;
+        let winners = [];
+
+        function startComparison(category) {
+            currentCategory = category;
+            comparisonQueue = createComparisonQueue(foodOptions[category]);
+            winners = [];
+            currentRound = 1;
+            showNextComparison();
+        }
+
+        function createComparisonQueue(options) {
+            let queue = [];
+            for (let i = 0; i < options.length; i += 2) {
+                queue.push([options[i], options[i + 1]]);
+            }
+            return queue;
+        }
+
+        function showNextComparison() {
+            if (comparisonQueue.length === 0) {
+                if (winners.length === 1) {
+                    alert('최종 선택된 음식은 ' + winners[0].name + '입니다!');
+                } else {
+                    comparisonQueue = createComparisonQueue(winners);
+                    winners = [];
+                    currentRound++;
+                    showNextComparison();
+                }
+                return;
+            }
+
+            const [option1, option2] = comparisonQueue.shift();
+            document.getElementById('comparison-title').textContent = `Round ${currentRound}`;
+            document.getElementById('comparison-options').innerHTML = `
+                <div class="food-option">
+                    <img src="${option1.img}" alt="${option1.name}">
+                    <button onclick="selectOption('${option1.name}')">${option1.name}</button>
+                </div>
+                <div class="food-option">
+                    <img src="${option2.img}" alt="${option2.name}">
+                    <button onclick="selectOption('${option2.name}')">${option2.name}</button>
+                </div>
+            `;
+            document.getElementById('comparison').classList.remove('hidden');
+        }
+
+        function selectOption(optionName) {
+            const selectedOption = foodOptions[currentCategory].find(option => option.name === optionName);
+            winners.push(selectedOption);
+            showNextComparison();
+        }
+    </script>
+</body>
+</html>
